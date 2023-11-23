@@ -20,10 +20,13 @@ if __name__ == '__main__':
     for par in newpar:
         par['id']=str(par['id'])
         if not os.path.exists('data/'+par['id']):os.mkdir('data/'+par['id'])
-        for parameter in par:save(par[parameter],'data/'+par['id']+'/'+parameter)
-        par['id']+='/'+par['initial'][1]
+        for parameter in par:
+            if parameter!='initial':
+                save(par[parameter],'data/'+par['id']+'/'+parameter)
+        par['id']+='/'+str(par['initial'][1])
         par['initial']=par['initial'][0]
         if not os.path.exists('data/'+par['id']):os.mkdir('data/'+par['id'])
+        save(par['initial'],'data/'+par['id']+'/initial')
     with Pool() as pool:sol=list(pool.map(solve,newpar))
     sols=list(zip(map(lambda x: x[1], sol),newpar))
     resp=list(map(lambda x:classify_trajectory(x[0], x[1]['threshold'], toll['cured'], toll['state'], toll['orbit']),sols))
