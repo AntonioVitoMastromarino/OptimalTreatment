@@ -21,14 +21,14 @@ def stationary(traj, epsilon):
     r_over_time = [point[1] for point in traj]
     return series_stationary(s_over_time, epsilon) and series_stationary(r_over_time, epsilon)
 
-def classify_steady_state(traj, min_size):
+def classify_steady_state(traj, eps):
     S_end, R_end = traj[-1]
 
-    if S_end < min_size and R_end < min_size:
+    if S_end < eps and R_end < eps:
         return 'cure'
-    elif R_end < min_size and S_end > min_size:
+    elif R_end < eps and S_end > eps:
         return 'S only'
-    elif S_end < min_size and R_end > min_size:
+    elif S_end < eps and R_end > eps:
         return 'R only'
     else:
         return 'mixed tumour'
@@ -93,7 +93,7 @@ def score_gridpoint(trjs, max_tumour_size, min_tumour_size, eps_ss, eps_orbit):
         outcomes.append([life_status, score])
     outcomes = pd.DataFrame(outcomes, columns=['life_status', 'score'])
     
-    survival_rate = len(outcomes[outcomes['life_status'] in ['alive', 'indeterminate']) / len(outcomes)
+    survival_rate = len(outcomes[outcomes['life_status'] in ['alive', 'indeterminate']]) / len(outcomes)
     # for the cases that died report the average survival time
     mean_survival_time = outcomes[outcomes['life_status'] == 'dead']['score'].mean()
     # for the cases that survived report the average tumour size
