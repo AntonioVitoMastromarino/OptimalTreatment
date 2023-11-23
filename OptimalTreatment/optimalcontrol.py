@@ -5,12 +5,12 @@ from matplotlib import pyplot
 import numpy
 
 def model_1(t,x,u,params):
-    dS=(1-(x[0]+x[1])/params['k'])*x[0]-u[0]*x[0]
+    dS=params['s']*(1-u[0])*(1-(x[0]+x[1])/params['k'])*x[0]-u[0]*x[0]
     dR=params['r']*(1-(params['c']*x[0]+x[1])/params['k'])*x[1]
     return numpy.array([dS,dR])
 
 def model_2(t,x,u,params):
-    dS=(1-(x[0]+x[1])/params['K']-u-params['a'])*x[0]-u[0]*x[0]+params['b']*x['1']
+    dS=(params['s']*(1-u[0])*(1-(x[0]+x[1])/params['K'])-u[0]-params['a'])*x[0]+params['b']*x['1']
     dR=(params['r']*(1-(x[0]+x[1])/params['k'])-params['b'])*x[1]+params['a']*x[0]
     return numpy.array([dS,dR])
 
@@ -18,15 +18,15 @@ def outpar(t,x,u,params):
     return x
 
 def terminal_cost(x,u):
-    return x[0]+x[1]
+    return 1000*(x[0]+x[1])
 
 def lagrange_cost(x,u):
-    return -1
+    return 0
 
-Tf=1
-Ts=16
+Tf=64
+Ts=256
 timepts=numpy.linspace(0, Tf, Ts, endpoint=True)
-x0=numpy.array([0.125,0.125]),
+x0=numpy.array([0.25,0.25]),
 
 def solve(params):
     if 'c' in params: model = model_1
