@@ -1,14 +1,11 @@
 import numpy as np
 
-def tumour_size_over_time(traj):
-    return [sum(point) for point in traj]
-
 def dead(traj, max_tumour_size):
-    size = tumour_size_over_time(traj)
+    size = np.sum(traj,axis=0)
     return any([s > max_tumour_size for s in size])
 
 def pointwise_change(traj):
-    size = tumour_size_over_time(traj)
+    size = np.sum(traj,axis=0)
     return [size[i+1] - size[i] for i in range(len(size)-1)]
 
 def stationary(traj, epsilon):
@@ -28,7 +25,7 @@ def classify_steady_state(traj, min_size):
         return 'mixed tumour'
     
 def periodic(traj):
-    size = tumour_size_over_time(traj)
+    size = np.sum(traj,axis=0)
 
     # calculate autocorrelation
     autocorr = np.correlate(size, size, mode='full')

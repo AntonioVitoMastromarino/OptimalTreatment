@@ -19,14 +19,14 @@ def model_2(t,x,u,params):
 def outpar(t,x,u,params):
     return x
 
-def solve(params):
+def solve(params,epsilon=0.1):
 
     def terminal_cost(x,u):
-        return 0
+        return epsilon*(x[0]+x[1])
 
     def lagrange_cost(x,u):
-        if x[0]+x[1]<params['threshold']: return -1
-        else: return 0
+        if x[0]+x[1]<params['threshold']: return epsilon*u[0]*(1-u[0])-1
+        else: return epsilon*u[0]*(1-u[0])
 
     timepts=numpy.linspace(0, params['Tfinal'], params['Tsteps'], endpoint=True)
     x0=numpy.array([params['S0'],params['R0']]),
