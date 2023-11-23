@@ -61,6 +61,11 @@ def classify_trajectory(traj, max_tumour_size, min_tumour_size, eps_ss, eps_orbi
         return 'dead'
     elif stationary(traj, eps_ss):
         return classify_steady_state(traj, min_tumour_size)
+    
+    # problem: we can determine if the signal has periodic components, but we can't actually tell
+    # if we're truly on a limit cycle or if we're just in a transient orbit
+    # so detecting periodicity is meaningless -> it's just indeterminate limit behaviour (not converged)
+
     # elif periodic(traj, eps_orbit):
     #     return 'periodic'
     else:
@@ -88,22 +93,13 @@ def score_gridpoint(trjs, max_tumour_size, min_tumour_size, eps_ss, eps_orbit):
         outcomes.append([life_status, score])
     outcomes = pd.DataFrame(outcomes, columns=['life_status', 'score'])
     
-    survival_rate = len(outcomes[outcomes['life_status'] == 'alive']) / len(outcomes)
+    survival_rate = len(outcomes[outcomes['life_status'] in ['alive', 'indeterminate']) / len(outcomes)
     # for the cases that died report the average survival time
-    survival_time = outcomes[outcomes['life_status'] == 'dead']['score'].mean()
+    mean_survival_time = outcomes[outcomes['life_status'] == 'dead']['score'].mean()
     # for the cases that survived report the average tumour size
-    tumour_size = outcomes[outcomes['life_status'] == 'alive']['score'].mean()
+    mean_tumour_size = outcomes[outcomes['life_status'] in ['alive', 'indeterminate']]['score'].mean()
 
-    return survival_rate, survival_time, tumour_size
-
-
-
-    
-    
-
-
-
-
+    return survival_rate, mean_survival_time, mean_tumour_size
 
 # score = {'dead'         : 0,        # clearly bad
 #          'R only'       : 0,        # adaptive therapy made it worse
@@ -117,3 +113,6 @@ def score_gridpoint(trjs, max_tumour_size, min_tumour_size, eps_ss, eps_orbit):
 # def classify_gridpoint(outcomes):
 #     # different outcomes for different initial conditions for the same parameter set (gridpoint)
 #     return np.sum([score[outc] for outc in outcomes])/len(outcomes)
+
+def read_gridpoint(gridpoint_path):
+    pass
