@@ -48,10 +48,10 @@ def solve(params):
                              initial_guess=numpy.array([0.5]))
 
     response=control.input_output_response(cancer,
-                                              timepts,
-                                              result.inputs,
-                                              x0,
-                                              t_eval=timepts)
+                                           timepts,
+                                           result.inputs,
+                                           x0,
+                                           t_eval=timepts)
 
     t, x, u = response.time, response.outputs, response.inputs
 
