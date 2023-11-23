@@ -1,0 +1,7 @@
+README.md
+setup.py
+OptimalTreatment.egg-info/PKG-INFO
+OptimalTreatment.egg-info/SOURCES.txt
+OptimalTreatment.egg-info/dependency_links.txt
+OptimalTreatment.egg-info/requires.txt
+OptimalTreatment.egg-info/top_level.txt

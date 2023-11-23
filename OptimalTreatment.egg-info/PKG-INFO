@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: OptimalTreatment
+Version: 1.0.0
+Summary: Optimal control on a system of two ODEs describing Cancer therapies
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: pandas
+Requires-Dist: scipy
+Requires-Dist: control
