@@ -3,8 +3,11 @@ from control import NonlinearIOSystem
 from control import optimal
 from matplotlib import pyplot
 import numpy
-from OptimalTreatment import solve
+from OptimalTreatment import solve, classify_trajectory
 
-def trajectories(param,initial):
-    sol=map(lambda x:solve(param|{'S0':x[0],'R0':x[1]}),initial)
-    return list(map(lambda x:x[1],sol))
+def trajectories(params,initial,toll):
+    sol=map(lambda x:solve(params|{'S0':x[0],'R0':x[1]}),initial)
+    return list(map(lambda x:classify_trajectory(x[1], params['threshold'], toll['cured'], toll['state'], toll['cycle']),sol))
+
+def manytrajectories(params,initial,toll={'cured':0.1,'state':0.1,'cycle':0.1}):
+    return list(map(lambda x: trajectories(x,initial,toll),params))

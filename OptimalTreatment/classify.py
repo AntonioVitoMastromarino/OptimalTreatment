@@ -44,7 +44,7 @@ def periodic(traj):
 
     return recurrences > 1
 
-def classify_trajectory(traj, min_tumour_size, max_tumour_size, eps_ss, eps_orbit):
+def classify_trajectory(traj, max_tumour_size, min_tumour_size, eps_ss, eps_orbit):
     if dead(traj, max_tumour_size):
         return 'dead'
     elif stationary(traj, eps_ss):
