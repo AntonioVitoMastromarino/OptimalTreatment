@@ -5,36 +5,37 @@ from matplotlib import pyplot
 import numpy
 
 def model_1(t,x,u,params):
-    dS=params['s']*(1-u[0])*(1-(x[0]+x[1])/params['k'])*x[0]-u[0]*x[0]
+    dS=params['s']*(1-u[0])*(1-(x[0]+x[1])/params['k'])*x[0]-u[0]*params['d']*x[0]
     dR=params['r']*(1-(params['c']*x[0]+x[1])/params['k'])*x[1]
-    return numpy.array([dS,dR])
+    if x[0]+x[1]<params['threshold']: return numpy.array([dS,dR])
+    else: return numpy.array([0,0])
 
 def model_2(t,x,u,params):
-    dS=(params['s']*(1-u[0])*(1-(x[0]+x[1])/params['K'])-u[0]-params['a'])*x[0]+params['b']*x['1']
+    dS=(params['s']*(1-u[0])*(1-(x[0]+x[1])/params['k'])-u[0]-params['a'])*x[0]+params['b']*x['1']
     dR=(params['r']*(1-(x[0]+x[1])/params['k'])-params['b'])*x[1]+params['a']*x[0]
-    return numpy.array([dS,dR])
+    if x[0]+x[1]<params['threshold']: return numpy.array([dS,dR])
+    else: return numpy.array([0,0])
 
 def outpar(t,x,u,params):
     return x
 
-def terminal_cost(x,u):
-    return 1000*(x[0]+x[1])
-
-def lagrange_cost(x,u):
-    return 0
-
-Tf=64
-Ts=256
-timepts=numpy.linspace(0, Tf, Ts, endpoint=True)
-x0=numpy.array([0.25,0.25]),
-
 def solve(params):
+
+    def terminal_cost(x,u):
+        return 0
+
+    def lagrange_cost(x,u):
+        if x[0]+x[1]<params['threshold']: return -1
+        else: return 0
+
+    timepts=numpy.linspace(0, params['Tfinal'], params['Tsteps'], endpoint=True)
+    x0=numpy.array([params['S0'],params['R0']]),
     if 'c' in params: model = model_1
     else: model = model_2
     cancer=NonlinearIOSystem(model,
                              outpar,
                              states=2,
-                             inputs=('d',),
+                             inputs=('u',),
                              outputs=('S','R'),
                              params=params)
     constraint=[optimal.input_range_constraint(cancer,[0],[1])]
@@ -45,17 +46,21 @@ def solve(params):
                              constraint,
                              terminal_cost=terminal_cost,
                              initial_guess=numpy.array([0.5]))
-    return control.input_output_response(cancer,
-                                         timepts,
-                                         result.inputs,
-                                         x0,
-                                         t_eval=numpy.linspace(0, Tf, Ts))
 
-def plotsolution(params):
+    response=control.input_output_response(cancer,
+                                              timepts,
+                                              result.inputs,
+                                              x0,
+                                              t_eval=timepts)
+
+    t, x, u = response.time, response.outputs, response.inputs
+
+    return (t, x, u)
+
+def plotsolution(solution):
     
-    outresponse=solve(params)
-    t, x, u = outresponse.time, outresponse.outputs, outresponse.inputs
-
+    t,x,u=solution
+    
     pyplot.subplot(2, 1, 1)
     pyplot.plot(x[0], x[1])
     pyplot.xlabel("S")
@@ -63,7 +68,7 @@ def plotsolution(params):
 
     pyplot.subplot(2, 1, 2)
     pyplot.plot(t, u[0])
-    pyplot.axis([0, Tf, -0.1, 1.1])
+    pyplot.axis([0, t[-1], -0.1, 1.1])
     pyplot.xlabel("t")
     pyplot.ylabel("delta")
 
