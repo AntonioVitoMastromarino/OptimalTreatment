@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd
 import os 
+from classify import score_gridpoint
 
 gridpoint_path = "/Users/irismarmouset-delataille/Desktop/OptimalTreatment/data"
 def read_gridpoint(gridpoint_path):
